@@ -230,24 +230,24 @@ const Home: React.FC = () => {
   ];
 
   return (
-    <div ref={parallaxRef} className="min-h-screen bg-black text-white overflow-x-hidden">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black px-4 sm:px-6 lg:px-8">
+    <div ref={parallaxRef} className="min-h-screen bg-black text-white overflow-x-hidden w-full">
+      {/* Hero Section - Fixed to prevent horizontal scroll */}
+      <section className="relative min-h-screen flex items-center justify-center bg-black px-4 sm:px-6 lg:px-8 w-full overflow-hidden">
         <div 
-          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900"
+          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900 w-full"
           data-speed="0.5"
         ></div>
         <motion.div
           variants={staggerChildren}
           initial="initial"
           animate="animate"
-          className="text-center relative z-10 max-w-7xl mx-auto w-full"
+          className="text-center relative z-10 max-w-7xl mx-auto w-full px-2 sm:px-4"
         >
           <motion.h1
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, ease: [0.6, -0.05, 0.01, 0.99] }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 sm:mb-6 px-2"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 sm:mb-6"
           >
             Digital
             <span className="block text-gray-300 mt-2 sm:mt-4">
@@ -258,7 +258,7 @@ const Home: React.FC = () => {
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, ease: [0.6, -0.05, 0.01, 0.99], delay: 0.1 }}
-            className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed px-4"
+            className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed"
           >
             We create modern, scalable digital solutions using cutting-edge technologies. 
             From concept to deployment, we bring your ideas to life with precision and innovation.
@@ -267,7 +267,7 @@ const Home: React.FC = () => {
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, ease: [0.6, -0.05, 0.01, 0.99], delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full"
           >
             <Link to="/contact" className="w-full sm:w-auto">
               <motion.button
@@ -298,12 +298,12 @@ const Home: React.FC = () => {
       </section>
 
       {/* Tech Stack Section */}
-      <section className="relative py-12 sm:py-16 md:py-20 bg-black">
+      <section className="relative py-12 sm:py-16 md:py-20 bg-black w-full overflow-hidden">
         <div 
-          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900"
+          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900 w-full"
           data-speed="0.3"
         ></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -314,11 +314,11 @@ const Home: React.FC = () => {
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
               Our Tech Stack
             </h2>
-            <p className="text-gray-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto px-2">
+            <p className="text-gray-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
               Comprehensive technology expertise for building robust, scalable, and high-performance solutions
             </p>
           </motion.div>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3 sm:gap-4 md:gap-6">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3 sm:gap-4 md:gap-6 w-full px-2 sm:px-0">
             {techStack.map((tech, index) => (
               <motion.div
                 key={tech.name}
@@ -331,7 +331,7 @@ const Home: React.FC = () => {
                   scale: 1.1,
                   transition: { duration: 0.2 }
                 }}
-                className="bg-gray-900 p-2 sm:p-3 md:p-4 rounded-xl sm:rounded-2xl border border-gray-800 text-center group cursor-pointer hover:bg-gray-800 hover:border-gray-700 transition-all duration-300"
+                className="bg-gray-900 p-2 sm:p-3 md:p-4 rounded-xl sm:rounded-2xl border border-gray-800 text-center group cursor-pointer hover:bg-gray-800 hover:border-gray-700 transition-all duration-300 w-full"
               >
                 <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 mx-auto mb-2 sm:mb-3 rounded-lg sm:rounded-xl ${tech.bgColor} flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                   {tech.icon}
@@ -344,12 +344,12 @@ const Home: React.FC = () => {
       </section>
 
       {/* Services Section */}
-      <section className="relative py-12 sm:py-16 md:py-20 bg-black">
+      <section className="relative py-12 sm:py-16 md:py-20 bg-black w-full overflow-hidden">
         <div 
-          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900"
+          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900 w-full"
           data-speed="0.4"
         ></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -360,11 +360,11 @@ const Home: React.FC = () => {
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
               Comprehensive Services
             </h2>
-            <p className="text-gray-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto px-2">
+            <p className="text-gray-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
               End-to-end digital solutions tailored to transform your business and drive growth
             </p>
           </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8 w-full">
             {services.map((service, index) => (
               <motion.div
                 key={service.title}
@@ -377,7 +377,7 @@ const Home: React.FC = () => {
                   scale: 1.02,
                   transition: { duration: 0.2 }
                 }}
-                className="bg-gray-900 p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl border border-gray-800 hover:bg-gray-800 hover:border-gray-700 transition-all duration-300 group"
+                className="bg-gray-900 p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl border border-gray-800 hover:bg-gray-800 hover:border-gray-700 transition-all duration-300 group w-full"
               >
                 <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-gradient-to-br from-white to-gray-300 rounded-lg sm:rounded-xl flex items-center justify-center text-black mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   {service.icon}
@@ -393,12 +393,12 @@ const Home: React.FC = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="relative py-12 sm:py-16 md:py-20 bg-black">
+      <section className="relative py-12 sm:py-16 md:py-20 bg-black w-full overflow-hidden">
         <div 
-          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900"
+          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900 w-full"
           data-speed="0.2"
         ></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -415,7 +415,7 @@ const Home: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8"
+            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 w-full"
           >
             {[
               { number: '100+', label: 'Projects Completed' },
@@ -429,7 +429,7 @@ const Home: React.FC = () => {
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
                 viewport={{ once: true }}
-                className="text-center bg-gray-900 p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl border border-gray-800 hover:bg-gray-800 transition-all duration-300"
+                className="text-center bg-gray-900 p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl border border-gray-800 hover:bg-gray-800 transition-all duration-300 w-full"
               >
                 <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-1 sm:mb-2">
                   {stat.number}
@@ -444,23 +444,23 @@ const Home: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-12 sm:py-16 md:py-20 bg-black">
+      <section className="relative py-12 sm:py-16 md:py-20 bg-black w-full overflow-hidden">
         <div 
-          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900"
+          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900 w-full"
           data-speed="0.3"
         ></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center w-full">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-12 lg:p-16 border border-gray-800 bg-gray-900/50 backdrop-blur-sm"
+            className="rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-12 lg:p-16 border border-gray-800 bg-gray-900/50 backdrop-blur-sm mx-4 sm:mx-0"
           >
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
               Ready to Transform Your Business?
             </h2>
-            <p className="text-gray-400 text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto px-2">
+            <p className="text-gray-400 text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto">
               Let's build something amazing together. Get in touch with our team to discuss your project and bring your vision to life.
             </p>
             <Link to="/contact">
