@@ -230,44 +230,55 @@ const Home: React.FC = () => {
   ];
 
   return (
-    <div ref={parallaxRef} className="min-h-screen bg-black text-white overflow-x-hidden w-full">
-      {/* Hero Section - Fixed to prevent horizontal scroll */}
-      <section className="relative min-h-screen flex items-center justify-center bg-black px-4 sm:px-6 lg:px-8 w-full overflow-hidden">
-        <div 
-          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900 w-full"
-          data-speed="0.5"
-        ></div>
-        <motion.div
-          variants={staggerChildren}
-          initial="initial"
-          animate="animate"
-          className="text-center relative z-10 max-w-7xl mx-auto w-full px-2 sm:px-4"
-        >
+    <div ref={parallaxRef} className="min-h-screen bg-black text-white overflow-x-hidden w-screen">
+      {/* Hero Section - Updated to match WhatsApp image */}
+      <section className="min-h-screen flex flex-col items-center justify-center px-4 w-full max-w-screen">
+        <div className="text-center w-full max-w-4xl mx-auto">
+          {/* Logo/Title - Match your WhatsApp image */}
           <motion.h1
-            initial={{ y: 60, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, ease: [0.6, -0.05, 0.01, 0.99] }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 sm:mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-2"
           >
-            Digital
-            <span className="block text-gray-300 mt-2 sm:mt-4">
-              Excellence
-            </span>
+            Nitytec.
           </motion.h1>
+          
+          {/* Tagline */}
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-300 mb-6"
+          >
+            Digital Excellence
+          </motion.h2>
+          
+          {/* Divider */}
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: '6rem' }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="h-1 bg-gray-600 mx-auto mb-8"
+          ></motion.div>
+          
+          {/* Description */}
           <motion.p
-            initial={{ y: 60, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, ease: [0.6, -0.05, 0.01, 0.99], delay: 0.1 }}
-            className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-10 leading-relaxed max-w-2xl mx-auto"
           >
             We create modern, scalable digital solutions using cutting-edge technologies. 
             From concept to deployment, we bring your ideas to life with precision and innovation.
           </motion.p>
+          
+          {/* Buttons */}
           <motion.div
-            initial={{ y: 60, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, ease: [0.6, -0.05, 0.01, 0.99], delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
           >
             <Link to="/contact" className="w-full sm:w-auto">
               <motion.button
@@ -276,25 +287,26 @@ const Home: React.FC = () => {
                   boxShadow: "0 10px 30px -10px rgba(255, 255, 255, 0.3)"
                 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-full sm:w-auto bg-white text-black px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:bg-gray-100 transition-all duration-300"
+                className="w-full bg-white text-black px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 Start Your Project
               </motion.button>
             </Link>
+            
             <Link to="/solutions" className="w-full sm:w-auto">
               <motion.button
                 whileHover={{ 
                   scale: 1.05,
-                  borderColor: "#ffffff"
+                  boxShadow: "0 10px 30px -10px rgba(255, 255, 255, 0.3)"
                 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-full sm:w-auto border-2 border-white text-white px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:bg-white hover:text-black transition-all duration-300"
+                className="w-full border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-black transition-all duration-300"
               >
                 View Solutions
               </motion.button>
             </Link>
           </motion.div>
-        </motion.div>
+        </div>
       </section>
 
       {/* Tech Stack Section */}
