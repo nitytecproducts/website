@@ -26,9 +26,9 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-light-grey-50">
+      <div className="min-h-screen bg-black text-white overflow-x-hidden w-full">
         <Header />
-        <main>
+        <main className="w-full overflow-x-hidden">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Products />} />
