@@ -11,9 +11,9 @@ import emailjs from '@emailjs/browser';
      VITE_EMAILJS_TEMPLATE_ID
      VITE_EMAILJS_PUBLIC_KEY
 ───────────────────────────────────────────── */
-const SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID  as string;
-const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID as string;
-const PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY  as string;
+const SERVICE_ID  = import.meta.env.EMAILJS_SERVICE_ID  as string;
+const TEMPLATE_ID = import.meta.env.EMAILJS_TEMPLATE_ID as string;
+const PUBLIC_KEY  = import.meta.env.EMAILJS_PUBLIC_KEY  as string;
 
 type Status = 'idle' | 'sending' | 'success' | 'error';
 
