@@ -227,13 +227,6 @@ const Home: React.FC = () => (
               </button>
             </Link>
           </motion.div>
-          <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ duration:0.7, delay:0.55 }}
-            className="mt-16 flex items-center gap-2 text-gray-600 text-[11px]">
-            <span className="w-3.5 h-3.5 rounded-full border border-gray-700 flex items-center justify-center">
-              <span className="w-1 h-1 rounded-full bg-gray-600" />
-            </span>
-            Scroll to explore
-          </motion.div>
         </div>
 
         {/* RIGHT carousel — takes remaining space, carousel self-centers */}
@@ -246,11 +239,6 @@ const Home: React.FC = () => (
 
     {/* Feature strip */}
     <div className="relative z-10 mt-8 mx-4 sm:mx-8 lg:mx-16 mb-10">
-      <div className="flex items-center justify-center gap-1.5 mb-5">
-        {[...Array(10)].map((_, i) => (
-          <span key={i} className={`rounded-full ${i === 4 ? 'w-5 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/[0.18]'}`} />
-        ))}
-      </div>
       <div className="rounded-2xl border border-white/[0.07] bg-[#080808] grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.07]">
         {[
           { icon: <FiUser className="w-5 h-5" />,      title: 'One Sign In',        desc: 'Access all Nitytec products with a single account.' },

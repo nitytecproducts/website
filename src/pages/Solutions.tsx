@@ -192,29 +192,6 @@ const Solutions: React.FC = () => (
       </div>
     </section>
 
-    {/* ──────────────── STATS ──────────────── */}
-    <section className="relative z-10 max-w-[1200px] mx-auto px-8 py-16 border-t border-white/[0.05]">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
-        {[
-          { val: '100+', label: 'Products Shipped' },
-          { val: '98%',  label: 'Client Retention' },
-          { val: '25+',  label: 'Technologies' },
-          { val: '24/7', label: 'System Uptime' },
-        ].map((s, i) => (
-          <motion.div
-            key={s.label}
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: i * 0.1 }}
-            viewport={{ once: true }}
-            className="flex flex-col gap-1"
-          >
-            <span className="font-playfair font-bold text-white text-4xl">{s.val}</span>
-            <span className="text-gray-600 text-xs tracking-wide">{s.label}</span>
-          </motion.div>
-        ))}
-      </div>
-    </section>
 
   </div>
 );
