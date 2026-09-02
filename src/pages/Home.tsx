@@ -1,497 +1,275 @@
 // src/pages/Home.tsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { 
-  FaPython, 
-  FaReact, 
-  FaNodeJs, 
-  FaAws,
-  FaDocker,
-  FaGitAlt,
-  FaMobileAlt,
-  FaGlobeAmericas,
-  FaTools,
-  FaRocket,
-  FaDatabase,
-  FaServer
-} from 'react-icons/fa';
-import { 
-  SiNextdotjs, 
-  SiFlask, 
-  SiMongodb, 
-  SiTypescript,
-  SiTailwindcss,
-  SiPostgresql,
-  SiRedis,
-  SiKubernetes,
-  SiGraphql,
-  SiJest,
-  SiCypress
-} from 'react-icons/si';
-import { 
-  FiCode, 
-  FiSmartphone, 
-  FiGlobe, 
-  FiSettings,
-  FiCloud,
-  FiLayers,
-  FiShield,
-  FiBarChart,
-  FiUsers
+import {
+  FiArrowUpRight,
+  FiRefreshCw,
+  FiZap,
+  FiUser,
+  FiChevronLeft,
+  FiChevronRight,
 } from 'react-icons/fi';
 
-const Home: React.FC = () => {
-  const parallaxRef = useRef<HTMLDivElement>(null);
+/* ─────────── card data ─────────── */
+const products = [
+  { id: 1, name: 'GCP Simulator', badge: 'LIVE DEMO',    category: 'Tool',        icon: '⬡', description: 'Learn, practice and simulate Google Cloud environments without limits.' },
+  { id: 2, name: 'Dock',          badge: 'LIVE DEMO',    category: 'Extension',   icon: '⊞', description: 'All-in-one productivity dock for the browser. Bring tabs forward, paste snippets, and send anything to AI instantly.' },
+  { id: 3, name: 'DataLens',      badge: 'INTERACTIVE',  category: 'Analytics',   icon: '◉', description: 'Turn raw data into visual stories. Dashboards, charts, and reports in minutes.' },
+  { id: 4, name: 'Vexa',          badge: 'INTERACTIVE',  category: 'AI Assistant',icon: '✳', description: 'Your personal AI assistant built for real work. Simplify tasks and stay ahead.' },
+  { id: 5, name: 'FlowBoard',     badge: 'INTERACTIVE',  category: 'Productivity',icon: '◈', description: 'All-in-one task management board for teams. Visualise work, track progress, and ship faster.' },
+  { id: 6, name: 'CodePulse',     badge: 'LIVE DEMO',    category: 'Extension',   icon: '⌘', description: 'Real-time code review and suggestions directly inside your editor. Ship quality code faster.' },
+];
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (parallaxRef.current) {
-        const scrolled = window.pageYOffset;
-        const parallaxElements = parallaxRef.current.querySelectorAll('.parallax-bg');
-        
-        parallaxElements.forEach((element) => {
-          const speed = element.getAttribute('data-speed') || '0.5';
-          const yPos = -(scrolled * parseFloat(speed));
-          (element as HTMLElement).style.transform = `translateY(${yPos}px)`;
-        });
-      }
-    };
+/* ─────────── card dimensions (px) ─────────── */
+const C_W  = 272;  // center card width
+const S_W  = 234;  // side card width
+const C_H  = 440;  // center card min-height
+const S_H  = 360;  // side card min-height
+// side card translate: 52% of S_W ≈ 122px  →  side card left edge from stage center ≈ 122+117=239px
+const SIDE_OFFSET = 240; // px from center to side-card center
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+/* ─────────── vertical lines at card edges ─────────── */
+// 4 lines: left edge of left card, both edges of center card, right edge of right card
+// All extend above & below the stage, clipped within this component's bounds.
+// Positions from stage center (STAGE_W/2 = 310px):
+//   Left card  (w=234, center=-240): left edge = -357px, right edge = -123px
+//   Center card(w=272, center=0):    left edge = -136px, right edge = +136px
+//   Right card (w=234, center=+240): left edge = +123px, right edge = +357px
+// Lines 2 (-136) and 3 (+136) are the two lines flanking the center card.
+const CARD_EDGE_LINES = [-357, -136, 136, 357];
 
-  const fadeInUp = {
-    initial: { y: 60, opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    transition: { duration: 0.6, ease: [0.6, -0.05, 0.01, 0.99] }
+const StageVerticalLines: React.FC = () => (
+  <div
+    aria-hidden="true"
+    className="pointer-events-none absolute z-0"
+    style={{ left: 0, right: 0, top: '-80px', bottom: '-40px' }}
+  >
+    {CARD_EDGE_LINES.map((offset) => (
+      <div
+        key={offset}
+        className="absolute top-0 bottom-0 w-px"
+        style={{
+          left: `calc(50% + ${offset}px)`,
+          background:
+            'linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.12) 10%, rgba(255,255,255,0.12) 90%, transparent 100%)',
+        }}
+      />
+    ))}
+  </div>
+);
+
+/* ─────────── product card ─────────── */
+interface CardProps { product: typeof products[0]; position: 'left'|'center'|'right'|'hidden'; }
+
+const ProductCard: React.FC<CardProps> = ({ product, position }) => {
+  const c = position === 'center';
+  const styles: Record<string, string> = {
+    left:   `scale-[0.86] opacity-50 z-10`,
+    center: `scale-100   opacity-100 z-20`,
+    right:  `scale-[0.86] opacity-50 z-10`,
+    hidden: `scale-[0.7]  opacity-0  z-0 pointer-events-none`,
   };
-
-  const staggerChildren = {
-    initial: { opacity: 0 },
-    animate: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
+  // Horizontal translation is handled via translateX directly
+  const tx: Record<string, string> = {
+    left:   `translateX(calc(-50% - ${SIDE_OFFSET}px))`,
+    center: `translateX(-50%)`,
+    right:  `translateX(calc(-50% + ${SIDE_OFFSET}px))`,
+    hidden: `translateX(-50%)`,
   };
-
-  const techStack = [
-    { 
-      name: 'Python', 
-      icon: <FaPython className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-700 to-gray-900'
-    },
-    { 
-      name: 'React', 
-      icon: <FaReact className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-600 to-gray-800'
-    },
-    { 
-      name: 'Next.js', 
-      icon: <SiNextdotjs className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-800 to-black'
-    },
-    { 
-      name: 'Node.js', 
-      icon: <FaNodeJs className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-700 to-gray-900'
-    },
-    { 
-      name: 'TypeScript', 
-      icon: <SiTypescript className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-600 to-gray-800'
-    },
-    { 
-      name: 'Flask', 
-      icon: <SiFlask className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-700 to-gray-900'
-    },
-    { 
-      name: 'MongoDB', 
-      icon: <SiMongodb className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-600 to-gray-800'
-    },
-    { 
-      name: 'PostgreSQL', 
-      icon: <SiPostgresql className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-700 to-gray-900'
-    },
-    { 
-      name: 'Tailwind', 
-      icon: <SiTailwindcss className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-600 to-gray-800'
-    },
-    { 
-      name: 'AWS', 
-      icon: <FaAws className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-700 to-gray-900'
-    },
-    { 
-      name: 'Docker', 
-      icon: <FaDocker className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-600 to-gray-800'
-    },
-    { 
-      name: 'Git', 
-      icon: <FaGitAlt className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-700 to-gray-900'
-    },
-    { 
-      name: 'Redis', 
-      icon: <SiRedis className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-600 to-gray-800'
-    },
-    { 
-      name: 'Kubernetes', 
-      icon: <SiKubernetes className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-700 to-gray-900'
-    },
-    { 
-      name: 'GraphQL', 
-      icon: <SiGraphql className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-600 to-gray-800'
-    },
-    { 
-      name: 'Jest', 
-      icon: <SiJest className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-700 to-gray-900'
-    },
-    { 
-      name: 'Cypress', 
-      icon: <SiCypress className="w-6 h-6 sm:w-8 sm:h-8" />, 
-      bgColor: 'bg-gradient-to-br from-gray-600 to-gray-800'
-    }
-  ];
-
-  const services = [
-    {
-      icon: <FiCode className="w-6 h-6 sm:w-8 sm:h-8" />,
-      title: 'Full-Stack Development',
-      description: 'End-to-end web application development with modern frameworks and best practices'
-    },
-    {
-      icon: <FiSmartphone className="w-6 h-6 sm:w-8 sm:h-8" />,
-      title: 'Mobile Applications',
-      description: 'Native and cross-platform mobile solutions for iOS and Android platforms'
-    },
-    {
-      icon: <FiGlobe className="w-6 h-6 sm:w-8 sm:h-8" />,
-      title: 'Web Solutions',
-      description: 'Scalable web applications, e-commerce platforms, and progressive web apps'
-    },
-    {
-      icon: <FaServer className="w-6 h-6 sm:w-8 sm:h-8" />,
-      title: 'Backend & API',
-      description: 'Robust backend systems, RESTful APIs, and microservices architecture'
-    },
-    {
-      icon: <FiCloud className="w-6 h-6 sm:w-8 sm:h-8" />,
-      title: 'Cloud & DevOps',
-      description: 'Cloud infrastructure, CI/CD pipelines, and deployment automation'
-    },
-    {
-      icon: <FiSettings className="w-6 h-6 sm:w-8 sm:h-8" />,
-      title: 'Maintenance & Support',
-      description: 'Ongoing maintenance, performance optimization, and technical support'
-    },
-    {
-      icon: <FaDatabase className="w-6 h-6 sm:w-8 sm:h-8" />,
-      title: 'Database Solutions',
-      description: 'Database design, optimization, and management for optimal performance'
-    },
-    {
-      icon: <FiLayers className="w-6 h-6 sm:w-8 sm:h-8" />,
-      title: 'System Architecture',
-      description: 'Scalable system design and architecture for enterprise applications'
-    },
-    {
-      icon: <FiShield className="w-6 h-6 sm:w-8 sm:h-8" />,
-      title: 'Security & Compliance',
-      description: 'Security audits, compliance implementation, and data protection'
-    },
-    {
-      icon: <FiBarChart className="w-6 h-6 sm:w-8 sm:h-8" />,
-      title: 'Analytics & BI',
-      description: 'Business intelligence, data analytics, and reporting solutions'
-    },
-    {
-      icon: <FiUsers className="w-6 h-6 sm:w-8 sm:h-8" />,
-      title: 'Team Augmentation',
-      description: 'Expert developers to augment your existing team and accelerate delivery'
-    },
-    {
-      icon: <FaRocket className="w-6 h-6 sm:w-8 sm:h-8" />,
-      title: 'MVP Development',
-      description: 'Rapid Minimum Viable Product development to validate your ideas quickly'
-    }
-  ];
 
   return (
-    <div ref={parallaxRef} className="min-h-screen bg-black text-white overflow-x-hidden w-screen">
-      {/* Hero Section - Updated to match WhatsApp image */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-4 w-full max-w-screen">
-        <div className="text-center w-full max-w-4xl mx-auto">
-          {/* Logo/Title - Match your WhatsApp image */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-2"
-          >
-            Nitytec.
-          </motion.h1>
-          
-          {/* Tagline */}
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-300 mb-6"
-          >
-            Digital Excellence
-          </motion.h2>
-          
-          {/* Divider */}
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: '6rem' }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="h-1 bg-gray-600 mx-auto mb-8"
-          ></motion.div>
-          
-          {/* Description */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-10 leading-relaxed max-w-2xl mx-auto"
-          >
-            We create modern, scalable digital solutions using cutting-edge technologies. 
-            From concept to deployment, we bring your ideas to life with precision and innovation.
-          </motion.p>
-          
-          {/* Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-          >
-            <Link to="/contact" className="w-full sm:w-auto">
-              <motion.button
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: "0 10px 30px -10px rgba(255, 255, 255, 0.3)"
-                }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full bg-white text-black px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl"
-              >
-                Start Your Project
-              </motion.button>
-            </Link>
-            
-            <Link to="/solutions" className="w-full sm:w-auto">
-              <motion.button
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: "0 10px 30px -10px rgba(255, 255, 255, 0.3)"
-                }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-black transition-all duration-300"
-              >
-                View Solutions
-              </motion.button>
-            </Link>
-          </motion.div>
+    <div
+      className={`absolute top-0 left-1/2 transition-all duration-500 ease-in-out ${styles[position]}`}
+      style={{ width: c ? `${C_W}px` : `${S_W}px`, transform: tx[position] }}
+    >
+      <div
+        className={`rounded-2xl flex flex-col gap-4 border ${
+          c ? 'bg-[#111] border-white/15 shadow-[0_20px_80px_rgba(0,0,0,0.9)]'
+            : 'bg-[#0c0c0c] border-white/[0.07]'
+        }`}
+        style={{ padding: c ? '24px' : '18px', minHeight: c ? `${C_H}px` : `${S_H}px` }}
+      >
+        <span className="self-start text-[9px] font-semibold tracking-widest text-gray-500 border border-white/[0.08] px-2 py-0.5 rounded-full">
+          ● {product.badge}
+        </span>
+        <div className={`rounded-xl bg-[#1c1c1c] border border-white/10 flex items-center justify-center text-white flex-shrink-0 ${c ? 'w-14 h-14 text-2xl' : 'w-10 h-10 text-lg'}`}>
+          {product.icon}
         </div>
-      </section>
-
-      {/* Tech Stack Section */}
-      <section className="relative py-12 sm:py-16 md:py-20 bg-black w-full overflow-hidden">
-        <div 
-          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900 w-full"
-          data-speed="0.3"
-        ></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-8 sm:mb-12 md:mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
-              Our Tech Stack
-            </h2>
-            <p className="text-gray-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
-              Comprehensive technology expertise for building robust, scalable, and high-performance solutions
-            </p>
-          </motion.div>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3 sm:gap-4 md:gap-6 w-full px-2 sm:px-0">
-            {techStack.map((tech, index) => (
-              <motion.div
-                key={tech.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05, duration: 0.5 }}
-                viewport={{ once: true }}
-                whileHover={{ 
-                  y: -8,
-                  scale: 1.1,
-                  transition: { duration: 0.2 }
-                }}
-                className="bg-gray-900 p-2 sm:p-3 md:p-4 rounded-xl sm:rounded-2xl border border-gray-800 text-center group cursor-pointer hover:bg-gray-800 hover:border-gray-700 transition-all duration-300 w-full"
-              >
-                <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 mx-auto mb-2 sm:mb-3 rounded-lg sm:rounded-xl ${tech.bgColor} flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                  {tech.icon}
-                </div>
-                <span className="font-semibold text-white text-xs sm:text-sm">{tech.name}</span>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section className="relative py-12 sm:py-16 md:py-20 bg-black w-full overflow-hidden">
-        <div 
-          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900 w-full"
-          data-speed="0.4"
-        ></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-8 sm:mb-12 md:mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
-              Comprehensive Services
-            </h2>
-            <p className="text-gray-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
-              End-to-end digital solutions tailored to transform your business and drive growth
-            </p>
-          </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8 w-full">
-            {services.map((service, index) => (
-              <motion.div
-                key={service.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                viewport={{ once: true }}
-                whileHover={{ 
-                  y: -8,
-                  scale: 1.02,
-                  transition: { duration: 0.2 }
-                }}
-                className="bg-gray-900 p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl border border-gray-800 hover:bg-gray-800 hover:border-gray-700 transition-all duration-300 group w-full"
-              >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-gradient-to-br from-white to-gray-300 rounded-lg sm:rounded-xl flex items-center justify-center text-black mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  {service.icon}
-                </div>
-                <h3 className="text-lg sm:text-xl md:text-xl font-bold text-white mb-2 sm:mb-3 md:mb-4">
-                  {service.title}
-                </h3>
-                <p className="text-gray-400 text-sm sm:text-base leading-relaxed">{service.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="relative py-12 sm:py-16 md:py-20 bg-black w-full overflow-hidden">
-        <div 
-          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900 w-full"
-          data-speed="0.2"
-        ></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-8 sm:mb-12 md:mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6 md:mb-8">
-              Our Impact
-            </h2>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 w-full"
-          >
-            {[
-              { number: '100+', label: 'Projects Completed' },
-              { number: '25+', label: 'Technologies' },
-              { number: '98%', label: 'Client Satisfaction' },
-              { number: '24/7', label: 'Support' }
-            ].map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                viewport={{ once: true }}
-                className="text-center bg-gray-900 p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl border border-gray-800 hover:bg-gray-800 transition-all duration-300 w-full"
-              >
-                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-1 sm:mb-2">
-                  {stat.number}
-                </div>
-                <div className="text-gray-300 font-medium text-sm sm:text-base md:text-lg">
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="relative py-12 sm:py-16 md:py-20 bg-black w-full overflow-hidden">
-        <div 
-          className="parallax-bg absolute inset-0 bg-gradient-to-br from-black to-gray-900 w-full"
-          data-speed="0.3"
-        ></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-12 lg:p-16 border border-gray-800 bg-gray-900/50 backdrop-blur-sm mx-4 sm:mx-0"
-          >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
-              Ready to Transform Your Business?
-            </h2>
-            <p className="text-gray-400 text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto">
-              Let's build something amazing together. Get in touch with our team to discuss your project and bring your vision to life.
-            </p>
-            <Link to="/contact">
-              <motion.button
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: "0 10px 30px -10px rgba(255, 255, 255, 0.3)"
-                }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-white text-black px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 rounded-xl font-semibold text-base sm:text-lg hover:bg-gray-100 transition-all duration-300 w-full sm:w-auto"
-              >
-                Start Your Journey
-              </motion.button>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
+        <h3 className={`font-playfair font-bold text-white leading-tight ${c ? 'text-[2rem]' : 'text-lg'}`}>
+          {product.name}
+        </h3>
+        <span className="self-start text-[10px] font-medium tracking-wider uppercase text-gray-400 border border-white/[0.08] px-2.5 py-1 rounded-full bg-white/[0.03]">
+          {product.category}
+        </span>
+        <p className={`text-gray-400 leading-relaxed flex-1 ${c ? 'text-sm' : 'text-xs'}`}>
+          {product.description}
+        </p>
+        <button className={`mt-auto flex items-center justify-between gap-2 rounded-xl border border-white/10 text-white font-medium transition-all duration-200 ${
+          c ? 'px-4 py-3 bg-[#1a1a1a] hover:bg-[#222] text-sm'
+            : 'px-3 py-2.5 bg-white/[0.04] hover:bg-white/[0.09] text-xs'
+        }`}>
+          Try Interactive
+          <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+            <FiArrowUpRight className="w-3 h-3" />
+          </span>
+        </button>
+      </div>
     </div>
   );
 };
+
+/* ─────────── carousel ─────────── */
+// STAGE_W must be wide enough to show 3 cards without clipping
+// Center card 272 + two side cards each ~117px visible = 272 + 234 = ~506 total visible
+// Add breathing room → 620px
+const STAGE_W = 620;
+const STAGE_H = 470;
+// Arrows sit exactly at: left/right of stage, vertically centered on side cards
+const ARROW_TOP = S_H / 2; // 180px
+
+const ProductCarousel: React.FC = () => {
+  const [current, setCurrent] = useState(2);
+  const pausedRef = useRef(false);
+  const timerRef  = useRef<ReturnType<typeof setInterval>|null>(null);
+  const total = products.length;
+
+  const pos = (i: number): CardProps['position'] => {
+    const p = (current - 1 + total) % total;
+    const n = (current + 1) % total;
+    if (i === current) return 'center';
+    if (i === p)       return 'left';
+    if (i === n)       return 'right';
+    return 'hidden';
+  };
+
+  const next = useCallback(() => setCurrent(c => (c + 1) % total), [total]);
+  const prev = useCallback(() => setCurrent(c => (c - 1 + total) % total), [total]);
+
+  useEffect(() => {
+    timerRef.current = setInterval(() => { if (!pausedRef.current) next(); }, 3200);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [next]);
+
+  return (
+    <div
+      className="select-none flex flex-col items-center"
+      onMouseEnter={() => (pausedRef.current = true)}
+      onMouseLeave={() => (pausedRef.current = false)}
+    >
+      {/* Row: arrow  ·  stage  ·  arrow — all inline so center is guaranteed */}
+      <div className="flex items-center gap-4">
+        {/* Prev */}
+        <button onClick={prev} aria-label="Previous"
+          className="flex-shrink-0 w-9 h-9 rounded-full bg-[#1a1a1a] border border-white/10
+                     flex items-center justify-center text-white hover:bg-[#262626] transition-colors z-30"
+          style={{ alignSelf: 'flex-start', marginTop: `${ARROW_TOP - 18}px` }}
+        >
+          <FiChevronLeft className="w-4 h-4" />
+        </button>
+
+        {/* Stage — fixed pixel size, overflow:visible so side cards show */}
+        <div
+          className="relative flex-shrink-0 overflow-visible"
+          style={{ width: `${STAGE_W}px`, height: `${STAGE_H}px` }}
+        >
+          <StageVerticalLines />
+          {products.map((p, i) => <ProductCard key={p.id} product={p} position={pos(i)} />)}
+        </div>
+
+        {/* Next */}
+        <button onClick={next} aria-label="Next"
+          className="flex-shrink-0 w-9 h-9 rounded-full bg-[#1a1a1a] border border-white/10
+                     flex items-center justify-center text-white hover:bg-[#262626] transition-colors z-30"
+          style={{ alignSelf: 'flex-start', marginTop: `${ARROW_TOP - 18}px` }}
+        >
+          <FiChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Dots */}
+      <div className="flex items-center gap-1.5 mt-4">
+        {products.map((_, i) => (
+          <button key={i} onClick={() => setCurrent(i)} aria-label={`Slide ${i+1}`}
+            className={`rounded-full transition-all duration-300 ${
+              i === current ? 'w-5 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/20 hover:bg-white/40'
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ─────────── home page ─────────── */
+const Home: React.FC = () => (
+  <div className="min-h-screen bg-black text-white overflow-x-hidden relative">
+
+    {/* Hero + Carousel */}
+    <div className="relative z-10 max-w-[1280px] mx-auto px-8 pt-24 pb-0">
+      <div className="flex flex-col lg:flex-row items-center lg:items-center gap-10 lg:gap-0">
+
+        {/* LEFT hero — fixed 380px */}
+        <div className="flex-shrink-0 w-full lg:w-[380px] flex flex-col justify-center">
+          <motion.h1 initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7 }}
+            className="font-playfair font-bold text-white leading-[1.07] tracking-tight text-[3rem] sm:text-[3.5rem]">
+            Built to reduce<br />repetitive work.
+          </motion.h1>
+          <motion.p initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7, delay:0.18 }}
+            className="mt-5 text-[13px] text-gray-400 leading-relaxed max-w-[210px]">
+            Smart products that simplify the things you do again and again.
+          </motion.p>
+          <motion.div initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7, delay:0.3 }} className="mt-8">
+            <Link to="/products">
+              <button className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-sm font-semibold hover:bg-gray-100 transition-colors group">
+                Explore Products
+                <FiArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </button>
+            </Link>
+          </motion.div>
+          <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ duration:0.7, delay:0.55 }}
+            className="mt-16 flex items-center gap-2 text-gray-600 text-[11px]">
+            <span className="w-3.5 h-3.5 rounded-full border border-gray-700 flex items-center justify-center">
+              <span className="w-1 h-1 rounded-full bg-gray-600" />
+            </span>
+            Scroll to explore
+          </motion.div>
+        </div>
+
+        {/* RIGHT carousel — takes remaining space, carousel self-centers */}
+        <motion.div initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7, delay:0.12 }}
+          className="flex-1 flex justify-center">
+          <ProductCarousel />
+        </motion.div>
+      </div>
+    </div>
+
+    {/* Feature strip */}
+    <div className="relative z-10 mt-8 mx-4 sm:mx-8 lg:mx-16 mb-10">
+      <div className="flex items-center justify-center gap-1.5 mb-5">
+        {[...Array(10)].map((_, i) => (
+          <span key={i} className={`rounded-full ${i === 4 ? 'w-5 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/[0.18]'}`} />
+        ))}
+      </div>
+      <div className="rounded-2xl border border-white/[0.07] bg-[#080808] grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.07]">
+        {[
+          { icon: <FiUser className="w-5 h-5" />,      title: 'One Sign In',        desc: 'Access all Nitytec products with a single account.' },
+          { icon: <FiZap className="w-5 h-5" />,       title: 'Built for Real Work', desc: 'Products that actually reduce repetitive work and save time.' },
+          { icon: <FiRefreshCw className="w-5 h-5" />, title: 'Always Evolving',     desc: 'New products, tools and updates delivered regularly.' },
+        ].map((f) => (
+          <div key={f.title} className="flex items-start gap-4 p-6 sm:p-7">
+            <div className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-white flex-shrink-0">
+              {f.icon}
+            </div>
+            <div>
+              <p className="font-playfair font-semibold text-white text-sm">{f.title}</p>
+              <p className="mt-1 text-gray-500 text-xs leading-relaxed">{f.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
 
 export default Home;

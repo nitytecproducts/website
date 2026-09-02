@@ -7,6 +7,10 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        playfair: ['"Playfair Display"', 'Georgia', 'serif'],
+        inter: ['Inter', 'system-ui', 'sans-serif'],
+      },
       colors: {
         'coral': {
           50: '#fff5f5',

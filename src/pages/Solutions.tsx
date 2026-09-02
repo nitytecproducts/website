@@ -1,217 +1,222 @@
-// src/pages/Solutions.tsx
+// src/pages/Solutions.tsx  — About Us
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { 
-  FiGlobe, 
-  FiSmartphone, 
-  FiServer, 
-  FiCloud,
-  FiBook,
-  FiBarChart2,
-  FiUsers,
-  FiMapPin,
-  FiShoppingCart,
-  FiMessageSquare,
-  FiDatabase,
-  FiShield
-} from 'react-icons/fi';
-import { 
-  FaRobot,
-  FaGraduationCap,
-  FaChartLine,
-  FaHandshake,
-} from 'react-icons/fa';
-import { 
-  SiGoogleclassroom,
- 
-} from 'react-icons/si';
 
-const Solutions: React.FC = () => {
-  const solutions = [
-    {
-      category: 'Learning Management',
-      icon: <FaGraduationCap className="w-8 h-8" />,
-      items: [
-        'LMS Platforms',
-        'Online Course Systems',
-        'Student Portals',
-        'Progress Tracking',
-        'Assessment Tools',
-        'Virtual Classrooms'
-      ],
-      features: ['Interactive Learning', 'Progress Tracking', 'Multi-format', 'Engaging']
-    },
-    {
-      category: 'CRM Systems',
-      icon: <FiUsers className="w-8 h-8" />,
-      items: [
-        'Customer Relationship Management',
-        'Sales Automation',
-        'Lead Management',
-        'Customer Support',
-        'Marketing Automation',
-        'Analytics & Reporting'
-      ],
-      features: ['Customer Focused', 'Automated Workflows', '360° View', 'Integrated']
-    },
-    {
-      category: 'Local Connecting Platforms',
-      icon: <FiMapPin className="w-8 h-8" />,
-      items: [
-        'Community Marketplaces',
-        'Local Service Platforms',
-        'Event Management Systems',
-        'Location-based Services',
-        'Review & Rating Systems',
-        'Payment Integration'
-      ],
-      features: ['Location-based', 'Community Driven', 'Real-time', 'Trust Building']
-    }
-  ];
+/* ── animated progress bar ── */
+const Bar: React.FC<{ color: string; width: string; delay?: number }> = ({ color, width, delay = 0 }) => (
+  <motion.div
+    className="h-1.5 rounded-full"
+    style={{ background: color }}
+    initial={{ width: 0 }}
+    animate={{ width }}
+    transition={{ duration: 1.2, delay, ease: 'easeOut' }}
+  />
+);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
+/* ── Data Synapse card (top-right visual) ── */
+const DataSynapseCard: React.FC = () => (
+  <motion.div
+    initial={{ opacity: 0, y: 32, rotate: -3 }}
+    animate={{ opacity: 1, y: 0, rotate: -3 }}
+    transition={{ duration: 0.8, delay: 0.2 }}
+    className="relative w-[280px] sm:w-[320px]"
+    style={{ transformOrigin: 'center' }}
+  >
+    {/* shadow card behind */}
+    <div
+      className="absolute inset-0 rounded-2xl bg-[#111]"
+      style={{ transform: 'translate(10px, 10px) rotate(3deg)', zIndex: 0 }}
+    />
+    {/* main card */}
+    <div className="relative z-10 rounded-2xl bg-[#111] border border-white/[0.09] p-6 flex flex-col gap-4">
+      {/* icon */}
+      <div className="w-10 h-10 rounded-xl bg-[#1e1e1e] border border-white/10 flex items-center justify-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.8">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      </div>
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5
-      }
-    }
-  };
+      <div>
+        <h3 className="font-playfair font-bold text-white text-xl leading-tight">Data Synapse</h3>
+        <p className="mt-1 text-gray-500 text-xs">Real-time processing nodes activated.</p>
+      </div>
 
-  return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Hero Section */}
-      <section className="py-20 bg-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Comprehensive Solutions
-            </h1>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              End-to-end digital solutions powered by cutting-edge technology to drive your business forward
-            </p>
-          </motion.div>
-
-          {/* All Solutions Grid */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {solutions.map((solution, index) => (
-              <motion.div
-                key={solution.category}
-                variants={itemVariants}
-                whileHover={{ 
-                  y: -5,
-                  scale: 1.02,
-                  transition: { duration: 0.2 }
-                }}
-                className="bg-gray-900 rounded-2xl p-6 border border-gray-800 hover:bg-gray-800 hover:border-gray-700 transition-all duration-300 group"
-              >
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-white to-gray-300 rounded-xl flex items-center justify-center text-black mr-4 group-hover:scale-110 transition-transform duration-300">
-                    {solution.icon}
-                  </div>
-                  <h3 className="text-lg font-bold text-white">
-                    {solution.category}
-                  </h3>
-                </div>
-                
-                <ul className="space-y-2 mb-4">
-                  {solution.items.map((item, itemIndex) => (
-                    <motion.li 
-                      key={item}
-                      initial={{ opacity: 0, x: -10 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ delay: itemIndex * 0.05 }}
-                      className="flex items-center text-gray-400 text-sm"
-                    >
-                      <div className="w-1.5 h-1.5 bg-white rounded-full mr-3 flex-shrink-0" />
-                      {item}
-                    </motion.li>
-                  ))}
-                </ul>
-
-                <div className="flex flex-wrap gap-1">
-                  {solution.features.map((feature) => (
-                    <span 
-                      key={feature}
-                      className="px-2 py-1 bg-gray-800 text-gray-300 text-xs rounded-full border border-gray-700"
-                    >
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-black">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="bg-gray-900 rounded-2xl p-8 md:p-12 text-white text-center border border-gray-800"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Ready to Build Your Solution?
-            </h2>
-            <p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
-              Let's discuss your project requirements and create a custom solution that perfectly fits your business needs.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/contact">
-                <motion.button
-                  whileHover={{ 
-                    scale: 1.05,
-                    boxShadow: "0 10px 30px -10px rgba(255, 255, 255, 0.3)"
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-white text-black px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300"
-                >
-                  Get Custom Quote
-                </motion.button>
-              </Link>
-              <motion.button
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: "0 10px 30px -10px rgba(255, 255, 255, 0.3)"
-                }}
-                whileTap={{ scale: 0.95 }}
-                className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-black transition-all duration-300"
-              >
-                Schedule Consultation
-              </motion.button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      {/* progress bars */}
+      <div className="flex flex-col gap-2.5 mt-1">
+        <Bar color="rgba(168,156,239,0.9)" width="75%" delay={0.6} />
+        <Bar color="rgba(230,180,100,0.7)" width="55%" delay={0.8} />
+        <Bar color="rgba(255,255,255,0.15)" width="40%" delay={1.0} />
+      </div>
     </div>
-  );
-};
+  </motion.div>
+);
+
+/* ── mission quote card ── */
+const MissionCard: React.FC = () => (
+  <motion.div
+    initial={{ opacity: 0, x: 32 }}
+    whileInView={{ opacity: 1, x: 0 }}
+    transition={{ duration: 0.75, delay: 0.15 }}
+    viewport={{ once: true }}
+    className="rounded-2xl bg-[#0e0e0e] border border-white/[0.08] p-7 max-w-[420px]"
+  >
+    <p className="text-gray-200 text-sm leading-relaxed">
+      To seamlessly integrate AI into the core workflows of modern enterprises, transforming abstract potential into
+      concrete, measurable efficiency. We believe in software that adapts to the human, not the other way around.
+    </p>
+    <p className="mt-5 text-[10px] tracking-widest text-gray-600 uppercase">— Core Directive</p>
+  </motion.div>
+);
+
+/* ── principle row ── */
+const principles = [
+  {
+    num: '01',
+    title: 'Precision by Default',
+    desc: 'Every decision, every line, every interaction is deliberate. We build with intention, not iteration.',
+  },
+  {
+    num: '02',
+    title: 'Human-Adaptive Systems',
+    desc: 'Our tools mould to the way people think and work — not the other way around.',
+  },
+  {
+    num: '03',
+    title: 'Continuous Intelligence',
+    desc: 'Products that learn, evolve, and improve as your organisation grows. Static is the enemy.',
+  },
+];
+
+const Solutions: React.FC = () => (
+  <div className="min-h-screen bg-black text-white overflow-x-hidden">
+
+    {/* subtle purple ambient glow — top right */}
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed z-0"
+      style={{
+        right: '-5%',
+        top: '0',
+        width: '600px',
+        height: '600px',
+        background: 'radial-gradient(circle, rgba(100,80,200,0.14) 0%, transparent 65%)',
+        borderRadius: '50%',
+      }}
+    />
+
+    {/* ──────────────── HERO SECTION ──────────────── */}
+    <section className="relative z-10 max-w-[1200px] mx-auto px-8 pt-28 pb-16">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+
+        {/* LEFT */}
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="flex flex-col gap-6 pt-4"
+        >
+          <h1 className="font-playfair font-bold text-white leading-[1.07] tracking-tight text-[3rem] sm:text-[3.5rem]">
+            Engineering<br />Intelligence.
+          </h1>
+
+          <div className="border-l-2 border-white/[0.08] pl-4 max-w-[380px]">
+            <p className="text-gray-400 text-sm leading-relaxed">
+              We build tools that reduce repetitive work, empowering teams to focus on profound, creative
+              problem-solving. Precision isn't a feature; it's our foundation.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* RIGHT — Data Synapse card */}
+        <div className="flex justify-center lg:justify-end pt-4">
+          <DataSynapseCard />
+        </div>
+      </div>
+    </section>
+
+    {/* ──────────────── MISSION SECTION ──────────────── */}
+    <section className="relative z-10 max-w-[1200px] mx-auto px-8 py-20 border-t border-white/[0.05]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+        {/* LEFT label + heading */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          viewport={{ once: true }}
+          className="flex flex-col gap-5"
+        >
+          <p className="text-[10px] tracking-widest text-gray-600 uppercase font-medium">
+            01 / The Mission
+          </p>
+          <h2 className="font-playfair font-bold text-white leading-[1.07] tracking-tight text-[3rem] sm:text-[3.5rem]">
+            Elevate<br />Human<br />Potential.
+          </h2>
+        </motion.div>
+
+        {/* RIGHT — quote card */}
+        <MissionCard />
+      </div>
+    </section>
+
+    {/* ──────────────── PRINCIPLES SECTION ──────────────── */}
+    <section className="relative z-10 max-w-[1200px] mx-auto px-8 py-20 border-t border-white/[0.05]">
+      <motion.p
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true }}
+        className="text-[10px] tracking-widest text-gray-600 uppercase font-medium mb-12"
+      >
+        02 / Core Principles
+      </motion.p>
+
+      <div className="flex flex-col gap-0">
+        {principles.map((p, i) => (
+          <motion.div
+            key={p.num}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: i * 0.12 }}
+            viewport={{ once: true }}
+            className="grid grid-cols-1 sm:grid-cols-[80px_1fr_1fr] gap-6 py-8 border-b border-white/[0.06] last:border-0"
+          >
+            <span className="text-[11px] tracking-widest text-gray-600 font-medium pt-1">{p.num}</span>
+            <h3 className="font-playfair font-bold text-white text-xl leading-tight">{p.title}</h3>
+            <p className="text-gray-500 text-sm leading-relaxed">{p.desc}</p>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+
+    {/* ──────────────── STATS ──────────────── */}
+    <section className="relative z-10 max-w-[1200px] mx-auto px-8 py-16 border-t border-white/[0.05]">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
+        {[
+          { val: '100+', label: 'Products Shipped' },
+          { val: '98%',  label: 'Client Retention' },
+          { val: '25+',  label: 'Technologies' },
+          { val: '24/7', label: 'System Uptime' },
+        ].map((s, i) => (
+          <motion.div
+            key={s.label}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: i * 0.1 }}
+            viewport={{ once: true }}
+            className="flex flex-col gap-1"
+          >
+            <span className="font-playfair font-bold text-white text-4xl">{s.val}</span>
+            <span className="text-gray-600 text-xs tracking-wide">{s.label}</span>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+
+  </div>
+);
 
 export default Solutions;

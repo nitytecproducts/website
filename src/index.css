@@ -7,36 +7,27 @@
   html {
     scroll-behavior: smooth;
   }
-  
+
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #000;
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-@layer components {
-  .gradient-text {
-    @apply bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent;
+/* Ensure Tailwind's font-playfair utility always applies correctly */
+@layer utilities {
+  .font-playfair {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif !important;
   }
-  
-  .card-hover {
-    @apply transition-all duration-300 hover:shadow-xl hover:scale-105;
+  .font-inter {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
   }
 }
 
-/* Add to your global CSS or create a new CSS file */
-.parallax-bg {
-  transform: translateZ(0);
-  will-change: transform;
-  transition: transform 0.1s ease-out;
-}
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Ensure sections have proper stacking context */
-section {
-  position: relative;
-  z-index: 1;
+html, body {
+  overflow-x: hidden;
+  width: 100%;
 }
