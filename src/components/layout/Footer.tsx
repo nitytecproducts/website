@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
 
         {/* Copyright */}
         <p className="text-xs text-gray-500 text-center">
-          &copy; 2024 Nitytec AI. Precision Intelligence.
+          &copy; 2026 Nitytec.
         </p>
 
         {/* Links */}

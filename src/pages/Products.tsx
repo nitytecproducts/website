@@ -1,9 +1,9 @@
 // src/pages/Products.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import { FiX, FiArrowRight } from 'react-icons/fi';
 import * as THREE from 'three';
+import ProductDemo from '../components/demos/ProductDemo';
 
 /* ─────────────────────────────────────────────
    Product data
@@ -274,7 +274,7 @@ const NodeLabels: React.FC<{ onSelect: (p: Product) => void }> = ({ onSelect }) 
 /* ─────────────────────────────────────────────
    Product detail panel — fixed overlay, safe on mobile
 ───────────────────────────────────────────── */
-const DetailPanel: React.FC<{ product: Product | null; onClose: () => void }> = ({ product, onClose }) => (
+const DetailPanel: React.FC<{ product: Product | null; onClose: () => void; onDemo: (name: string) => void }> = ({ product, onClose, onDemo }) => (
   <AnimatePresence>
     {product && (
       /* Full-screen backdrop — fixed so it covers entire viewport */
@@ -329,11 +329,12 @@ const DetailPanel: React.FC<{ product: Product | null; onClose: () => void }> = 
           </div>
 
           {/* CTA */}
-          <Link to="/contact" onClick={onClose}>
-            <button className="mt-6 w-full py-3 rounded-xl bg-[#1e1e2e] border border-white/[0.08] text-white text-xs font-semibold tracking-widest uppercase hover:bg-[#2a2a3e] transition-colors flex items-center justify-center gap-2">
-              Try Interactive <FiArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </Link>
+          <button
+            onClick={() => { onClose(); onDemo(product.name); }}
+            className="mt-6 w-full py-3 rounded-xl bg-[#1e1e2e] border border-white/[0.08] text-white text-xs font-semibold tracking-widest uppercase hover:bg-[#2a2a3e] transition-colors flex items-center justify-center gap-2"
+          >
+            Try Interactive <FiArrowRight className="w-3.5 h-3.5" />
+          </button>
         </motion.div>
       </motion.div>
     )}
@@ -345,6 +346,7 @@ const DetailPanel: React.FC<{ product: Product | null; onClose: () => void }> = 
 ───────────────────────────────────────────── */
 const Products: React.FC = () => {
   const [selected, setSelected] = useState<Product | null>(null);
+  const [demoId, setDemoId] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
@@ -380,7 +382,7 @@ const Products: React.FC = () => {
         </div>
 
         {/* Product detail panel — renders outside section via fixed positioning */}
-        <DetailPanel product={selected} onClose={() => setSelected(null)} />
+        <DetailPanel product={selected} onClose={() => setSelected(null)} onDemo={setDemoId} />
       </section>
 
       {/* ──────── WHAT WE DO ──────── */}
@@ -419,6 +421,13 @@ const Products: React.FC = () => {
           ))}
         </div>
       </section>
+
+      {/* Interactive demo overlay */}
+      <AnimatePresence>
+        {demoId && (
+          <ProductDemo productId={demoId} onClose={() => setDemoId(null)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

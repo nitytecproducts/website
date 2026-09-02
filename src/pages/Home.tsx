@@ -1,6 +1,6 @@
 // src/pages/Home.tsx
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   FiArrowUpRight,
@@ -10,6 +10,7 @@ import {
   FiChevronLeft,
   FiChevronRight,
 } from 'react-icons/fi';
+import ProductDemo from '../components/demos/ProductDemo';
 
 /* ─────────── card data ─────────── */
 const products = [
@@ -60,9 +61,9 @@ const StageVerticalLines: React.FC = () => (
 );
 
 /* ─────────── product card ─────────── */
-interface CardProps { product: typeof products[0]; position: 'left'|'center'|'right'|'hidden'; }
+interface CardProps { product: typeof products[0]; position: 'left'|'center'|'right'|'hidden'; onDemo: (name: string) => void; }
 
-const ProductCard: React.FC<CardProps> = ({ product, position }) => {
+const ProductCard: React.FC<CardProps> = ({ product, position, onDemo }) => {
   const c = position === 'center';
   const styles: Record<string, string> = {
     left:   `scale-[0.86] opacity-50 z-10`,
@@ -105,7 +106,9 @@ const ProductCard: React.FC<CardProps> = ({ product, position }) => {
         <p className={`text-gray-400 leading-relaxed flex-1 ${c ? 'text-sm' : 'text-xs'}`}>
           {product.description}
         </p>
-        <button className={`mt-auto flex items-center justify-between gap-2 rounded-xl border border-white/10 text-white font-medium transition-all duration-200 ${
+        <button
+          onClick={() => onDemo(product.name)}
+          className={`mt-auto flex items-center justify-between gap-2 rounded-xl border border-white/10 text-white font-medium transition-all duration-200 ${
           c ? 'px-4 py-3 bg-[#1a1a1a] hover:bg-[#222] text-sm'
             : 'px-3 py-2.5 bg-white/[0.04] hover:bg-white/[0.09] text-xs'
         }`}>
@@ -128,7 +131,7 @@ const STAGE_H = 470;
 // Arrows sit exactly at: left/right of stage, vertically centered on side cards
 const ARROW_TOP = S_H / 2; // 180px
 
-const ProductCarousel: React.FC = () => {
+const ProductCarousel: React.FC<{ onDemo: (name: string) => void }> = ({ onDemo }) => {
   const [current, setCurrent] = useState(2);
   const pausedRef = useRef(false);
   const timerRef  = useRef<ReturnType<typeof setInterval>|null>(null);
@@ -174,7 +177,7 @@ const ProductCarousel: React.FC = () => {
           style={{ width: `${STAGE_W}px`, height: `${STAGE_H}px` }}
         >
           <StageVerticalLines />
-          {products.map((p, i) => <ProductCard key={p.id} product={p} position={pos(i)} />)}
+          {products.map((p, i) => <ProductCard key={p.id} product={p} position={pos(i)} onDemo={onDemo} />)}
         </div>
 
         {/* Next */}
@@ -202,62 +205,73 @@ const ProductCarousel: React.FC = () => {
 };
 
 /* ─────────── home page ─────────── */
-const Home: React.FC = () => (
-  <div className="min-h-screen bg-black text-white overflow-x-hidden relative">
+const Home: React.FC = () => {
+  const [demoId, setDemoId] = useState<string | null>(null);
 
-    {/* Hero + Carousel */}
-    <div className="relative z-10 max-w-[1280px] mx-auto px-8 pt-24 pb-0">
-      <div className="flex flex-col lg:flex-row items-center lg:items-center gap-10 lg:gap-0">
+  return (
+    <div className="min-h-screen bg-black text-white overflow-x-hidden relative">
 
-        {/* LEFT hero — fixed 380px */}
-        <div className="flex-shrink-0 w-full lg:w-[380px] flex flex-col justify-center">
-          <motion.h1 initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7 }}
-            className="font-playfair font-bold text-white leading-[1.07] tracking-tight text-[3rem] sm:text-[3.5rem]">
-            Built to reduce<br />repetitive work.
-          </motion.h1>
-          <motion.p initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7, delay:0.18 }}
-            className="mt-5 text-[13px] text-gray-400 leading-relaxed max-w-[210px]">
-            Smart products that simplify the things you do again and again.
-          </motion.p>
-          <motion.div initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7, delay:0.3 }} className="mt-8">
-            <Link to="/products">
-              <button className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-sm font-semibold hover:bg-gray-100 transition-colors group">
-                Explore Products
-                <FiArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </button>
-            </Link>
+      {/* Hero + Carousel */}
+      <div className="relative z-10 max-w-[1280px] mx-auto px-8 pt-24 pb-0">
+        <div className="flex flex-col lg:flex-row items-center lg:items-center gap-10 lg:gap-0">
+
+          {/* LEFT hero — fixed 380px */}
+          <div className="flex-shrink-0 w-full lg:w-[380px] flex flex-col justify-center">
+            <motion.h1 initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7 }}
+              className="font-playfair font-bold text-white leading-[1.07] tracking-tight text-[3rem] sm:text-[3.5rem]">
+              Built to reduce<br />repetitive work.
+            </motion.h1>
+            <motion.p initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7, delay:0.18 }}
+              className="mt-5 text-[13px] text-gray-400 leading-relaxed max-w-[210px]">
+              Smart products that simplify the things you do again and again.
+            </motion.p>
+            <motion.div initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7, delay:0.3 }} className="mt-8">
+              <Link to="/products">
+                <button className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-sm font-semibold hover:bg-gray-100 transition-colors group">
+                  Explore Products
+                  <FiArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </button>
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* RIGHT carousel */}
+          <motion.div initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7, delay:0.12 }}
+            className="flex-1 flex justify-center">
+            <ProductCarousel onDemo={setDemoId} />
           </motion.div>
         </div>
-
-        {/* RIGHT carousel — takes remaining space, carousel self-centers */}
-        <motion.div initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7, delay:0.12 }}
-          className="flex-1 flex justify-center">
-          <ProductCarousel />
-        </motion.div>
       </div>
-    </div>
 
-    {/* Feature strip */}
-    <div className="relative z-10 mt-8 mx-4 sm:mx-8 lg:mx-16 mb-10">
-      <div className="rounded-2xl border border-white/[0.07] bg-[#080808] grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.07]">
-        {[
-          { icon: <FiUser className="w-5 h-5" />,      title: 'One Sign In',        desc: 'Access all Nitytec products with a single account.' },
-          { icon: <FiZap className="w-5 h-5" />,       title: 'Built for Real Work', desc: 'Products that actually reduce repetitive work and save time.' },
-          { icon: <FiRefreshCw className="w-5 h-5" />, title: 'Always Evolving',     desc: 'New products, tools and updates delivered regularly.' },
-        ].map((f) => (
-          <div key={f.title} className="flex items-start gap-4 p-6 sm:p-7">
-            <div className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-white flex-shrink-0">
-              {f.icon}
+      {/* Feature strip */}
+      <div className="relative z-10 mt-8 mx-4 sm:mx-8 lg:mx-16 mb-10">
+        <div className="rounded-2xl border border-white/[0.07] bg-[#080808] grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.07]">
+          {[
+            { icon: <FiUser className="w-5 h-5" />,      title: 'One Sign In',        desc: 'Access all Nitytec products with a single account.' },
+            { icon: <FiZap className="w-5 h-5" />,       title: 'Built for Real Work', desc: 'Products that actually reduce repetitive work and save time.' },
+            { icon: <FiRefreshCw className="w-5 h-5" />, title: 'Always Evolving',     desc: 'New products, tools and updates delivered regularly.' },
+          ].map((f) => (
+            <div key={f.title} className="flex items-start gap-4 p-6 sm:p-7">
+              <div className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-white flex-shrink-0">
+                {f.icon}
+              </div>
+              <div>
+                <p className="font-playfair font-semibold text-white text-sm">{f.title}</p>
+                <p className="mt-1 text-gray-500 text-xs leading-relaxed">{f.desc}</p>
+              </div>
             </div>
-            <div>
-              <p className="font-playfair font-semibold text-white text-sm">{f.title}</p>
-              <p className="mt-1 text-gray-500 text-xs leading-relaxed">{f.desc}</p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
+
+      {/* Interactive demo overlay */}
+      <AnimatePresence>
+        {demoId && (
+          <ProductDemo productId={demoId} onClose={() => setDemoId(null)} />
+        )}
+      </AnimatePresence>
     </div>
-  </div>
-);
+  );
+};
 
 export default Home;
