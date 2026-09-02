@@ -119,7 +119,6 @@ const OrbitalScene: React.FC<{ onSelect: (p: Product) => void }> = ({ onSelect }
     nodeGroupRef.current = group;
 
     // Background floating orbs (purple blobs)
-    const blobGeo = new THREE.SphereGeometry(1, 12, 12);
     const blobMat = new THREE.MeshBasicMaterial({ color: 0x4a3fa0 });
     const blobPositions = [
       [120, 160, -100], [-180, -120, -80], [80, -180, -120],
@@ -273,59 +272,69 @@ const NodeLabels: React.FC<{ onSelect: (p: Product) => void }> = ({ onSelect }) 
 );
 
 /* ─────────────────────────────────────────────
-   Product detail panel (modal)
+   Product detail panel — fixed overlay, safe on mobile
 ───────────────────────────────────────────── */
 const DetailPanel: React.FC<{ product: Product | null; onClose: () => void }> = ({ product, onClose }) => (
   <AnimatePresence>
     {product && (
+      /* Full-screen backdrop — fixed so it covers entire viewport */
       <motion.div
-        initial={{ opacity: 0, scale: 0.94, y: 12 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.94, y: 12 }}
-        transition={{ duration: 0.22 }}
-        className="absolute z-30 w-[320px] rounded-2xl bg-[#0e0e14] border border-white/[0.10] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.9)]"
-        style={{ top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}
+        onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       >
-        {/* Close */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 w-6 h-6 flex items-center justify-center text-gray-500 hover:text-white transition-colors"
+        <motion.div
+          initial={{ opacity: 0, scale: 0.94, y: 16 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.94, y: 16 }}
+          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+          className="relative w-full max-w-sm rounded-2xl bg-[#0e0e14] border border-white/[0.10] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.95)]"
         >
-          <FiX className="w-4 h-4" />
-        </button>
-
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-1">
-          <div className="w-10 h-10 rounded-xl bg-[#1c1c2e] border border-white/10 flex items-center justify-center text-white text-lg">
-            {product.icon}
-          </div>
-          <div>
-            <h3 className="font-playfair font-bold text-white text-xl leading-tight">{product.name}</h3>
-            <p className="text-gray-500 text-xs mt-0.5">{product.price}</p>
-          </div>
-        </div>
-
-        <p className="text-gray-400 text-sm leading-relaxed mt-4">{product.description}</p>
-
-        {/* Features */}
-        <div className="mt-4">
-          <p className="text-[10px] tracking-widest text-gray-600 uppercase mb-2">Key Features</p>
-          <ul className="flex flex-col gap-1.5">
-            {product.features.map((f) => (
-              <li key={f} className="flex items-center gap-2 text-sm text-gray-300">
-                <span className="w-1 h-1 rounded-full bg-white/40 flex-shrink-0" />
-                {f}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* CTA */}
-        <Link to="/contact">
-          <button className="mt-6 w-full py-3 rounded-xl bg-[#1e1e2e] border border-white/[0.08] text-white text-xs font-semibold tracking-widest uppercase hover:bg-[#2a2a3e] transition-colors flex items-center justify-center gap-2">
-            Try Interactive <FiArrowRight className="w-3.5 h-3.5" />
+          {/* Close */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 w-7 h-7 rounded-full bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-gray-500 hover:text-white transition-colors"
+          >
+            <FiX className="w-3.5 h-3.5" />
           </button>
-        </Link>
+
+          {/* Header */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-11 h-11 rounded-xl bg-[#1c1c2e] border border-white/10 flex items-center justify-center text-white text-xl flex-shrink-0">
+              {product.icon}
+            </div>
+            <div>
+              <h3 className="font-playfair font-bold text-white text-xl leading-tight">{product.name}</h3>
+              <p className="text-gray-500 text-xs mt-0.5">{product.price}</p>
+            </div>
+          </div>
+
+          <p className="text-gray-400 text-sm leading-relaxed">{product.description}</p>
+
+          {/* Features */}
+          <div className="mt-4">
+            <p className="text-[10px] tracking-widest text-gray-600 uppercase mb-2.5">Key Features</p>
+            <ul className="flex flex-col gap-2">
+              {product.features.map((f) => (
+                <li key={f} className="flex items-center gap-2.5 text-sm text-gray-300">
+                  <span className="w-1 h-1 rounded-full bg-white/40 flex-shrink-0" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* CTA */}
+          <Link to="/contact" onClick={onClose}>
+            <button className="mt-6 w-full py-3 rounded-xl bg-[#1e1e2e] border border-white/[0.08] text-white text-xs font-semibold tracking-widest uppercase hover:bg-[#2a2a3e] transition-colors flex items-center justify-center gap-2">
+              Try Interactive <FiArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </Link>
+        </motion.div>
       </motion.div>
     )}
   </AnimatePresence>
@@ -370,7 +379,7 @@ const Products: React.FC = () => {
           </motion.p>
         </div>
 
-        {/* Product detail panel */}
+        {/* Product detail panel — renders outside section via fixed positioning */}
         <DetailPanel product={selected} onClose={() => setSelected(null)} />
       </section>
 
