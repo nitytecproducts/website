@@ -1,7 +1,7 @@
 // src/pages/Products.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiX, FiArrowRight } from 'react-icons/fi';
+import { FiX, FiArrowRight, FiCpu, FiGlobe, FiBarChart2, FiPackage, FiCloud } from 'react-icons/fi';
 import * as THREE from 'three';
 import ProductDemo from '../components/demos/ProductDemo';
 
@@ -64,11 +64,11 @@ const PRODUCTS: Product[] = [
    What We Do service cards
 ───────────────────────────────────────────── */
 const SERVICES = [
-  { icon: '🤖', title: 'Artificial Intelligence', desc: 'Custom LLM deployments, autonomous agent integrations, and workflow automation for complex data environments.' },
-  { icon: '🌐', title: 'Web Architecture', desc: 'High-performance, scalable web applications built on modern frameworks, with enterprise standards and speed.' },
-  { icon: '📊', title: 'Data Analytics', desc: 'Real-time processing pipelines, data warehousing and visualisation infrastructure for effective decision-making.' },
-  { icon: '🚀', title: 'Product Development', desc: 'End-to-end product lifecycle management, from ideation through architecture to SaaS launch and iteration.' },
-  { icon: '☁️', title: 'Cloud Services', desc: 'Multi-cloud architecture, container orchestration, and auto-scaling deployment strategies for maximum resilience.' },
+  { icon: <FiCpu className="w-5 h-5 text-white" />,       title: 'Artificial Intelligence', desc: 'Custom LLM deployments, autonomous agent integrations, and workflow automation for complex data environments.' },
+  { icon: <FiGlobe className="w-5 h-5 text-white" />,     title: 'Web Architecture',         desc: 'High-performance, scalable web applications built on modern frameworks, with enterprise standards and speed.' },
+  { icon: <FiBarChart2 className="w-5 h-5 text-white" />, title: 'Data Analytics',            desc: 'Real-time processing pipelines, data warehousing and visualisation infrastructure for effective decision-making.' },
+  { icon: <FiPackage className="w-5 h-5 text-white" />,   title: 'Product Development',       desc: 'End-to-end product lifecycle management, from ideation through architecture to SaaS launch and iteration.' },
+  { icon: <FiCloud className="w-5 h-5 text-white" />,     title: 'Cloud Services',            desc: 'Multi-cloud architecture, container orchestration, and auto-scaling deployment strategies for maximum resilience.' },
 ];
 
 /* ─────────────────────────────────────────────
@@ -109,7 +109,7 @@ const OrbitalScene: React.FC<{ onSelect: (p: Product) => void }> = ({ onSelect }
 
     // Ambient + point lights
     scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-    const ptLight = new THREE.PointLight(0x7c6bff, 2, 800);
+    const ptLight = new THREE.PointLight(0xffffff, 1.5, 800);
     ptLight.position.set(0, 0, 200);
     scene.add(ptLight);
 
@@ -118,19 +118,18 @@ const OrbitalScene: React.FC<{ onSelect: (p: Product) => void }> = ({ onSelect }
     scene.add(group);
     nodeGroupRef.current = group;
 
-    // Background floating orbs (purple blobs)
-    const blobMat = new THREE.MeshBasicMaterial({ color: 0x4a3fa0 });
+    // Background floating orbs — solid opaque white, same as text
     const blobPositions = [
       [120, 160, -100], [-180, -120, -80], [80, -180, -120],
       [-60, 120, -60], [200, -60, -140], [-140, 180, -100],
     ];
     blobPositions.forEach(([x, y, z], i) => {
       const size = 14 + i * 6;
-      const mesh = new THREE.Mesh(new THREE.SphereGeometry(size, 16, 16), blobMat.clone());
+      const mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(size, 16, 16),
+        new THREE.MeshBasicMaterial({ color: 0xffffff }),
+      );
       mesh.position.set(x, y, z);
-      (mesh.material as THREE.MeshBasicMaterial).transparent = true;
-      (mesh.material as THREE.MeshBasicMaterial).opacity = 0.55 + i * 0.04;
-      (mesh.material as THREE.MeshBasicMaterial).color.set(i % 2 === 0 ? 0x3a2f8f : 0x5a4fbf);
       group.add(mesh);
     });
 
@@ -144,7 +143,7 @@ const OrbitalScene: React.FC<{ onSelect: (p: Product) => void }> = ({ onSelect }
       // Node circle
       const geo = new THREE.CircleGeometry(28, 48);
       const mat = new THREE.MeshBasicMaterial({
-        color: 0x111120,
+        color: 0x0d0d0d,
         transparent: true,
         opacity: 0.92,
       });
@@ -154,7 +153,7 @@ const OrbitalScene: React.FC<{ onSelect: (p: Product) => void }> = ({ onSelect }
 
       // Ring border
       const ringGeo = new THREE.RingGeometry(26, 28, 48);
-      const ringMat = new THREE.MeshBasicMaterial({ color: 0x3a3a5a, side: THREE.DoubleSide });
+      const ringMat = new THREE.MeshBasicMaterial({ color: 0x404040, side: THREE.DoubleSide });
       const ring = new THREE.Mesh(ringGeo, ringMat);
       mesh.add(ring);
 
@@ -204,7 +203,7 @@ const OrbitalScene: React.FC<{ onSelect: (p: Product) => void }> = ({ onSelect }
       nodes.forEach(({ mesh }) => {
         const mat = mesh.material as THREE.MeshBasicMaterial;
         const isHovered = hovered.length > 0 && hovered[0].object === mesh;
-        mat.color.set(isHovered ? 0x2a2a4a : 0x111120);
+        mat.color.set(isHovered ? 0x1a1a1a : 0x0d0d0d);
         // scale up slightly on hover
         const target = isHovered ? 1.12 : 1.0;
         mesh.scale.lerp(new THREE.Vector3(target, target, target), 0.12);
@@ -259,7 +258,7 @@ const NodeLabels: React.FC<{ onSelect: (p: Product) => void }> = ({ onSelect }) 
           className="absolute flex flex-col items-center gap-1.5 pointer-events-auto group"
           style={{ left: `${cx}%`, top: `${cy}%`, transform: 'translate(-50%,-50%)' }}
         >
-          <div className="w-12 h-12 rounded-full bg-[#111120] border border-[#3a3a5a] flex items-center justify-center text-white text-lg group-hover:border-[#6a5aff] group-hover:bg-[#1a1a30] transition-all duration-200 shadow-[0_0_20px_rgba(100,80,200,0.2)]">
+          <div className="w-12 h-12 rounded-full bg-[#0d0d0d] border border-[#404040] flex items-center justify-center text-white text-lg group-hover:border-white group-hover:bg-[#141414] transition-all duration-200 shadow-[0_0_16px_rgba(255,255,255,0.08)]">
             {p.icon}
           </div>
           <span className="text-[11px] text-gray-400 group-hover:text-white transition-colors font-medium">
@@ -367,7 +366,7 @@ const Products: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             className="font-playfair font-bold text-white text-[4.5rem] sm:text-[6rem] leading-none tracking-tight select-none"
-            style={{ textShadow: '0 0 80px rgba(100,80,200,0.3)' }}
+            style={{ textShadow: '0 0 80px rgba(255,255,255,0.15)' }}
           >
             Ecosystem
           </motion.h1>
@@ -412,7 +411,7 @@ const Products: React.FC = () => {
               viewport={{ once: true }}
               className="rounded-2xl bg-[#0a0a10] border border-white/[0.07] p-7 flex flex-col gap-4 hover:border-white/[0.14] transition-colors duration-300"
             >
-              <div className="w-10 h-10 rounded-xl bg-[#1a1a28] border border-white/[0.08] flex items-center justify-center text-xl">
+              <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center">
                 {s.icon}
               </div>
               <h3 className="font-playfair font-bold text-white text-xl leading-tight">{s.title}</h3>
